@@ -1,0 +1,54 @@
+<script  >
+    $(function(){
+
+        var client = new Faye.Client('http://localhost:9292/faye');
+       var public_subscription = client.subscribe('/messages/public', function(data) {
+      $('<p></p>').html(data.username + ": " + data.msg).appendTo('#chat_room');
+    });
+
+
+        $('#new_message_form').submit(function(){
+
+            client.publish('/message/public',
+                { username: '<%= session[:username] %>',
+                msg: $('#message').val()
+        });
+
+        $('#message').val('');
+
+        return false;
+        });
+
+    });
+
+
+
+</script>
+
+
+<div class="chat_container">
+    <div id="chat_room" >
+        <p class="alert"> Welcome to the chat room <%= session[:username]%></p>
+
+
+
+    </div>
+        <div style="  position: fixed;
+    bottom: 0;
+    width: 100%;">
+        <form style="width: 500px;
+    margin: 0 auto;" id="new_message_form" >
+        <input type ="text" id="message" name="message">
+        <input type ="submit" value= "Send" >
+        </form>
+        </div>
+</div>
+<div style="float: right;">
+<h1>Active Users</h1>
+<% @users.each do |user| %>
+<div class="well">
+
+<h3 ><%= user.name %> </h3>
+</div>
+<% end %>
+</div>
